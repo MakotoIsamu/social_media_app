@@ -40,6 +40,10 @@ mongoose.connect(process.env.MONGO_URI)
 app.use('/api/auth', authRoutes)
 app.use('/api/post', postRoutes)
 
+app.get('/', (req, res) => {
+    res.send('Api is running')
+})
+
 app.listen(PORT, () => (
     console.log(`Server is listening on PORT: ${PORT}`)
 ))
