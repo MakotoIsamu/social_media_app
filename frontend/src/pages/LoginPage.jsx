@@ -5,6 +5,7 @@ import { toast } from 'react-toastify';
 
 const LoginPage = () => {
   const [email, setEmail] = useState('');
+  const [token, setToken] = useState('');
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
 
@@ -20,9 +21,8 @@ const LoginPage = () => {
       const response = await fetch(`${BACKEND_URI}/api/auth/login`, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
         },
-        credentials: 'include',
         body: JSON.stringify({ email, password })
       });
 
@@ -32,6 +32,7 @@ const LoginPage = () => {
       }
 
       const data = await response.json();
+      setToken(data.token)
       toast.success(data.message);
       navigate('/');
     } catch (error) {

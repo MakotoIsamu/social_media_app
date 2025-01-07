@@ -12,10 +12,10 @@ export const AuthProvider = ({ children }) => {
         credentials: 'include'
     })
     if(!response.ok){
-        const data = await response.json()
-        return toast.error(data.error)
+        return toast.error('Something went wrong')
     }
     const data = await response.json()
+    console.log(data.authenticated)
     setAuth(data.authenticated)
   }
 
