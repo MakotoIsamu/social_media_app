@@ -1,9 +1,11 @@
-import React, { useState } from "react";
+import React, { useContext } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Compass, Home, Search, Settings, TrendingUp } from "lucide-react";
 import luffy from "../assets/luffy.jpg";
+import { AuthContext } from "../contexts/AuthContext";
 
 const Sidebar = () => {
+  const {Auth} = useContext(AuthContext)
   const location = useLocation();
 
   // Navigation items configuration
@@ -53,20 +55,27 @@ const Sidebar = () => {
           );
         })}
 
-        {/* Profile Link */}
-        <Link
-          to="/profile"
-          className="p-1 rounded-full ring-2 ring-transparent 
-                     transition duration-200 hover:ring-blue-400"
-        >
-          <div className="h-7 w-7 rounded-full overflow-hidden ring-1 ring-white/20">
-            <img
-              src={luffy}
-              alt="Profile"
-              className="h-full w-full object-cover"
-            />
-          </div>
-        </Link>
+
+        {
+          Auth ? (
+            <Link
+            to="/profile"
+            className="p-1 rounded-full ring-2 ring-transparent 
+                       transition duration-200 hover:ring-blue-400"
+          >
+            <div className="h-7 w-7 rounded-full overflow-hidden ring-1 ring-white/20">
+              <img
+                src={luffy}
+                alt="Profile"
+                className="h-full w-full object-cover"
+              />
+            </div>
+          </Link>
+          ) : (
+            <Link to='/login' className="bg-blue-500 hover:bg-blue-400 rounded-3xl px-4 py-2">Login</Link>
+          )
+
+        }
       </div>
     </nav>
   );

@@ -28,7 +28,7 @@ const LoginPage = () => {
 
       if (!response.ok) {
         const data = await response.json();
-        return toast.error(data.message);
+        return toast.error(data.error);
       }
 
       const data = await response.json();

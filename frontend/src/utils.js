@@ -1,1 +1,1 @@
-export const BACKEND_URI = 'https://social-media-app-backend-kappa.vercel.app'
+export const BACKEND_URI = 'https://social-media-app-backend-ggq0.onrender.com'

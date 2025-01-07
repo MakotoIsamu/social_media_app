@@ -7,14 +7,14 @@ const User = require('../models/UserModel');
 router.post('/register', async (req, res) => {
     const { name, email, password } = req.body;
     if (!name || !email || !password) {
-        return res.status(400).json({ message: 'All fields required' });
+        return res.status(400).json({ error: 'All fields required' });
     }
 
     try {
         // Check if email is already taken
         const existingUser = await User.findOne({ email });
         if (existingUser) {
-            return res.status(400).json({ message: 'Email already registered' });
+            return res.status(400).json({ error: 'Email already registered' });
         }
 
         const hashedPassword = await bcrypt.hash(password, 10);
@@ -27,7 +27,7 @@ router.post('/register', async (req, res) => {
         const newUser = await user.save();
         res.status(201).json({ message: 'Signup successful', user: newUser });
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        res.status(500).json({ error: error.message });
     }
 });
 
@@ -35,24 +35,24 @@ router.post('/register', async (req, res) => {
 router.post('/login', async (req, res) => {
     const { email, password } = req.body;
     if (!email || !password) {
-        return res.status(400).json({ message: 'All fields required' });
+        return res.status(400).json({ error: 'All fields required' });
     }
 
     try {
         const user = await User.findOne({ email });
         if (!user) {
-            return res.status(404).json({ message: "User doesn't exist" });
+            return res.status(404).json({ error: "User doesn't exist" });
         }
 
         const comparePassword = await bcrypt.compare(password, user.password);
         if (!comparePassword) {
-            return res.status(400).json({ message: 'Invalid password' });
+            return res.status(400).json({ error: 'Invalid password' });
         }
 
         req.session.userId = user._id;
         res.status(200).json({ message: 'Login successful' });
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        res.status(500).json({ error: error.message });
     }
 });
 
@@ -68,7 +68,7 @@ router.get('/checkAuth', async (req, res) => {
 router.post('/logout', async (req, res) => {
     req.session.destroy((err) => {
         if (err) {
-            return res.status(500).json({ message: 'Error logging out' });
+            return res.status(500).json({ error: 'Error logging out' });
         }
         res.clearCookie('connect-sid');
         res.status(200).json({ message: 'User logged out' });
