@@ -1,7 +1,7 @@
 // PostComponent.jsx
 import { Heart, MessageCircle, Share2 } from 'lucide-react';
 import React, { useState, useEffect } from 'react';
-
+import profilePic from '../assets/luffy.jpg'
 const PostComponent = () => {
   const [loading, setLoading] = useState(true);
 
@@ -12,7 +12,7 @@ const PostComponent = () => {
   }, []);
 
   if (loading) {
-    return (
+    return ( 
       <div className="w-full p-4 bg-white/10 backdrop-blur-sm rounded-xl ring-1 ring-white/10 animate-pulse">
         <div className="flex gap-4">
           {/* Skeleton Avatar */}
@@ -51,7 +51,7 @@ const PostComponent = () => {
         {/* Avatar */}
         <div className="flex-shrink-0">
           <div className="h-12 w-12 rounded-full bg-gray-700 overflow-hidden ring-2 ring-white/10">
-            <img src="" alt="" className="h-full w-full object-cover" />
+            <img src={profilePic} alt="" className="h-full w-full object-cover" />
           </div>
         </div>
 

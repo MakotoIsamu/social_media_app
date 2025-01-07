@@ -1,12 +1,13 @@
-import React, { useState } from 'react';
+import React, {useContext, useState } from 'react';
+import { AuthContext } from '../contexts/AuthContext';
 import { Link, useNavigate } from 'react-router-dom';
 import {BACKEND_URI} from '../utils'
 import { toast } from 'react-toastify';
 
 const LoginPage = () => {
   const [email, setEmail] = useState('');
-  const [token, setToken] = useState('');
   const [password, setPassword] = useState('');
+  const { setToken, setAuth} = useContext(AuthContext); // Access AuthContext
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -23,7 +24,7 @@ const LoginPage = () => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ email, password })
+        body: JSON.stringify({ email, password }),
       });
 
       if (!response.ok) {
@@ -32,7 +33,11 @@ const LoginPage = () => {
       }
 
       const data = await response.json();
-      setToken(data.token)
+      localStorage.setItem('AuthToken', data.token);
+
+      // Update context and navigate
+      setToken(data.token);
+      setAuth(true); // Set user as authenticated
       toast.success(data.message);
       navigate('/');
     } catch (error) {
