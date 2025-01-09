@@ -18,14 +18,42 @@ function App() {
     <Router>
       <Routes>
         <Route path='/' element={<HomePage/>}>
-          <Route path='/search' element={<SearchPage/>} />
-          <Route path='/addPost' element={<ProtectedRoute><AddPostPage/></ProtectedRoute>} />
+          <Route path='search' element={<SearchPage/>} />
+          <Route 
+            path='addPost' 
+            element={
+              <ProtectedRoute>
+                <AddPostPage/>
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path='profile' 
+            element={
+              <ProtectedRoute>
+                <ProfilePage/>
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path='edit-profile' 
+            element={
+              <ProtectedRoute>
+                <EditProfilePage/>
+              </ProtectedRoute>
+            } 
+          />
         </Route>
         <Route path='/reels' element={<ReelsPage/>} />
-        <Route path='/edit-profile' element={<ProtectedRoute><EditProfilePage/></ProtectedRoute>} />
-        <Route path='/profile' element={<ProtectedRoute><ProfilePage/></ProtectedRoute>} />
-        <Route path='/login' element={Auth ? <Navigate to='/' replace/> : <LoginPage/>} />
-        <Route path='/signup' element={Auth ? <Navigate to='/' replace/> :<SignupPage/>} />
+        <Route 
+          path='/login' 
+          element={Auth ? <Navigate to='/' replace/> : <LoginPage/>} 
+        />
+        <Route 
+          path='/signup' 
+          element={Auth ? <Navigate to='/' replace/> : <SignupPage/>} 
+        />
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </Router>
   );

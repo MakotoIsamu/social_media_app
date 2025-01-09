@@ -15,3 +15,36 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+.post-images-slider .slick-dots {
+  bottom: 16px;
+}
+
+.post-images-slider .slick-dots li button:before {
+  color: white;
+  opacity: 0.5;
+}
+
+.post-images-slider .slick-dots li.slick-active button:before {
+  opacity: 1;
+}
+
+.post-images-slider .slick-prev,
+.post-images-slider .slick-next {
+  z-index: 1;
+  width: 40px;
+  height: 40px;
+}
+
+.post-images-slider .slick-prev {
+  left: 16px;
+}
+
+.post-images-slider .slick-next {
+  right: 16px;
+}
+
+.post-images-slider .slick-prev:before,
+.post-images-slider .slick-next:before {
+  font-size: 40px;
+}

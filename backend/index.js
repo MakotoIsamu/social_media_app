@@ -10,6 +10,7 @@ const PORT = process.env.PORT || 5000;
 
 app.use(cors({
     origin: 'https://baatkaro.vercel.app',
+    // origin: 'http://localhost:3000',
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH']
 }));
 

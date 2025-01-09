@@ -45,9 +45,10 @@ router.get('/', async (req, res) => {
 });
 
 // Get a post by user
-router.get('/:userId', async (req, res) => {
+router.get('/my-post', authenticateToken, async (req, res) => {
+    const userId = req.user._id
     try {
-        const posts = await Post.find({ user: req.params.userId });
+        const posts = await Post.find({ user: userId });
         res.status(200).json(posts);
     } catch (error) {
         res.status(500).json({ message: error.message });
