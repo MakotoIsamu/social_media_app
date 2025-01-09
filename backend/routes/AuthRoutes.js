@@ -3,14 +3,12 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const router = express.Router();
 const User = require('../models/UserModel');
-
-// Secret key for signing JWT
-const JWT_SECRET = 'your_secret_key'; // Replace with a strong secret key
+const authenticateToken = require('../middlewares/Authentication')
 
 // Register a new user
 router.post('/register', async (req, res) => {
-    const { name, email, password } = req.body;
-    if (!name || !email || !password) {
+    const { username, email, password } = req.body;
+    if (!username || !email || !password) {
         return res.status(400).json({ error: 'All fields required' });
     }
 
@@ -22,7 +20,7 @@ router.post('/register', async (req, res) => {
 
         const hashedPassword = await bcrypt.hash(password, 10);
         const user = new User({
-            name,
+            username,
             email,
             password: hashedPassword,
         });
@@ -54,8 +52,8 @@ router.post('/login', async (req, res) => {
 
         // Generate JWT token
         const token = jwt.sign(
-            { userId: user._id, email: user.email },
-            JWT_SECRET,
+            { _id: user._id, name: user.username },
+            process.env.JWT_SECRET,
             { expiresIn: '1h' } // Token expires in 1 hour
         );
 
@@ -68,23 +66,25 @@ router.post('/login', async (req, res) => {
     }
 });
 
-// Middleware to verify token
-function authenticateToken(req, res, next) {
-    const token = req.headers.authorization && req.headers.authorization.split(' ')[1];
-    if (!token) {
-        return res.status(401).json({ error: 'Access denied, token missing' });
-    }
-
+router.get('/profile', authenticateToken, async (req, res) => {
     try {
-        const verified = jwt.verify(token, JWT_SECRET);
-        req.user = verified; // Attach user info to request
-        next();
+        // Get user ID from the authenticated token
+        const userId = req.user._id;
+        
+        // Find user by ID but exclude password
+        const user = await User.findById(userId).select('-password');
+        
+        if (!user) {
+            return res.status(404).json({ error: "User not found" });
+        }
+        
+        res.status(200).json(user);
     } catch (error) {
-        res.status(403).json({ error: 'Invalid token' });
+        console.error("Error in /profile route:", error);
+        res.status(500).json({ error: "Internal Server Error", details: error.message });
     }
-}
+});
 
-// Protected route (example)
 router.get('/checkAuth', authenticateToken, (req, res) => {
     res.status(200).json({ authenticated: true, user: req.user });
 });

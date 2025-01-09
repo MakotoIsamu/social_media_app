@@ -22,7 +22,9 @@ export const AuthProvider = ({ children }) => {
         },
       });
 
-      if (!response.ok) throw new Error('Authentication check failed');
+      if (!response.ok) {
+        console.error('Authentication check failed')
+      };
 
       const data = await response.json();
       setAuth(data.authenticated);

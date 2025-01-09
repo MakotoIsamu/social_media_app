@@ -3,6 +3,7 @@ const Post = require('../models/PostModel');
 const multer = require('multer');
 const Cloudinary = require('cloudinary').v2;
 const {CloudinaryStorage} = require('multer-storage-cloudinary');
+const authenticateToken = require('../middlewares/Authentication')
 const router = express.Router();
 
 // Multer and Cloudinary configuration
@@ -43,18 +44,18 @@ router.get('/:userId', async (req, res) => {
 });
 
 // Create a post
-router.post('/add', upload.array('images', 5) , async (req, res) => {
-    const {text , video, likes, comments} = req.body;
+router.post('/add', authenticateToken, upload.array('images', 5) , async (req, res) => {
+    const {text} = req.body;
     try {
         if(!text){
             return res.status(400).json({ message: 'Text is required' });
         }
         const image_paths = req.files.map(file => file.path)
+        const userId = req.user._id
         const post = new Post({
+            user: userId,
             text,
-            image : image_paths,
-            likes,
-            comments
+            images : image_paths,
         });
         await post.save()
         res.status(201).json({message: 'Post created successful'})

@@ -1,9 +1,27 @@
 // HomePageLayout.jsx
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import PostComponent from './PostComponent';
 import AddPost from './AddPost';
+import { toast } from 'react-toastify';
+import { BACKEND_URI } from '../utils';
 
 const HomePageLayout = () => {
+  const [posts, setPosts] = useState([])
+
+  const handleFetchPost = async () => {
+    const response = await fetch(`${BACKEND_URI}/api/post/`);
+    if(!response.ok){
+      const data = await response.json()
+      return toast.error(data.error)
+    }
+    const data = await response.json()
+    setPosts(data)
+  }
+
+  useEffect(() => {
+    handleFetchPost()
+  }, [])
+  
   return (
     <div className="max-w-2xl mx-auto">
       <AddPost />
@@ -22,8 +40,11 @@ const HomePageLayout = () => {
       </div>
       {/* Posts Container */}
       <div className="flex flex-col gap-4">
-        <PostComponent />
-        <PostComponent />
+        {
+          posts.map((post, i) => (
+            <PostComponent key={i} text={post.text} image={post.image} name={post.user.name} username={post.user.username} profilePic={post.user.profilePic} />
+          ))
+        }
       </div>
     </div>
   );

@@ -8,6 +8,9 @@ import AddPostPage from './pages/AddPostPage';
 import { useContext } from 'react';
 import { AuthContext } from './contexts/AuthContext';
 import ReelsPage from './pages/ReelsPage';
+import ProfilePage from './pages/ProfilePage';
+import ProtectedRoute from './components/ProtectedRoute';
+import EditProfilePage from './pages/EditProfilePage';
 
 function App() {
   const {Auth} = useContext(AuthContext)
@@ -16,9 +19,11 @@ function App() {
       <Routes>
         <Route path='/' element={<HomePage/>}>
           <Route path='/search' element={<SearchPage/>} />
-          <Route path='/addPost' element={<AddPostPage/>} />
+          <Route path='/addPost' element={<ProtectedRoute><AddPostPage/></ProtectedRoute>} />
         </Route>
         <Route path='/reels' element={<ReelsPage/>} />
+        <Route path='/edit-profile' element={<ProtectedRoute><EditProfilePage/></ProtectedRoute>} />
+        <Route path='/profile' element={<ProtectedRoute><ProfilePage/></ProtectedRoute>} />
         <Route path='/login' element={Auth ? <Navigate to='/' replace/> : <LoginPage/>} />
         <Route path='/signup' element={Auth ? <Navigate to='/' replace/> :<SignupPage/>} />
       </Routes>

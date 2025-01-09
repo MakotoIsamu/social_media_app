@@ -1,8 +1,8 @@
 // PostComponent.jsx
 import { Heart, MessageCircle, Share2 } from 'lucide-react';
 import React, { useState, useEffect } from 'react';
-import profilePic from '../assets/luffy.jpg'
-const PostComponent = () => {
+
+const PostComponent = ({text, image, name, username, profilePic}) => {
   const [loading, setLoading] = useState(true);
 
   // Simulate data loading
@@ -59,15 +59,13 @@ const PostComponent = () => {
         <div className="flex-1 min-w-0">
           {/* Header */}
           <div className="flex gap-2 items-center mb-2">
-            <p className="font-bold text-white truncate">Dhruv Verma</p>
-            <p className="text-gray-400 text-sm truncate">@dhruvverma</p>
+            <p className="font-bold text-white truncate">{name}</p>
+            <p className="text-gray-400 text-sm truncate">{username}</p>
           </div>
 
           {/* Post Text */}
           <p className="text-gray-200 mb-4">
-            Lorem ipsum dolor sit, amet consectetur adipisicing elit. Quos at minima id ipsa impedit
-            iure sapiente, voluptatum natus beatae fuga. Iste architecto perferendis obcaecati
-            consectetur voluptas distinctio voluptates quos blanditiis.
+            {text}
           </p>
 
           {/* Actions */}

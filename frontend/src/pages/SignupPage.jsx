@@ -4,14 +4,14 @@ import { toast } from 'react-toastify';
 import {BACKEND_URI} from '../utils'
 
 const SignupPage = () => {
-  const [name, setName] = useState('');
+  const [username, setUserName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!name || !email || !password) {
+    if (!username || !email || !password) {
       toast.error('Please fill all fields');
       return;
     }
@@ -22,8 +22,7 @@ const SignupPage = () => {
         headers: {
           'Content-Type': 'application/json',
         },
-        credentials: 'include',
-        body: JSON.stringify({ name, email, password }),
+        body: JSON.stringify({ username, email, password }),
       });
 
       if (!response.ok) {
@@ -54,17 +53,17 @@ const SignupPage = () => {
             {/* Name Input */}
             <div>
               <label 
-                htmlFor="name" 
+                htmlFor="username" 
                 className="block text-sm font-medium text-gray-200 mb-2"
               >
-                Full Name
+                Username
               </label>
               <input
                 type="text"
-                id="name"
-                name="name"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
+                id="username"
+                name="username"
+                value={username}
+                onChange={(e) => setUserName(e.target.value)}
                 required
                 className="w-full px-4 py-3 rounded-lg bg-black/50 border border-gray-600 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200"
                 placeholder="Enter your full name"

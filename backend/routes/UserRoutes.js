@@ -1,14 +1,35 @@
 const express = require('express')
-const router = express.Router()
+const authenticateToken = require('../middlewares/Authentication')
+const multer = require('multer')
+const cloudinary = require('cloudinary').v2
+const { CloudinaryStorage } = require('multer-storage-cloudinary')
 const User = require('../models/UserModel')
+const router = express.Router()
+
+// Multer and Cloudinary configuration
+cloudinary.config({
+    cloud_name: process.env.CLOUD_NAME,
+    api_key: process.env.API_KEY,
+    api_secret: process.env.API_SECRET
+})
+
+const storage = new CloudinaryStorage({
+    cloudinary: cloudinary,
+    params: {
+        folder: 'social_media_app/profilePicture',
+        allowedFormats: ['jpg', 'jpeg', 'png']
+    }
+})
+
+const upload = multer({storage})
 
 // Get all users
 router.get('/', async (req, res) => {
     try {
         const users = await User.find()
-        res.json(users)
+        res.status(200).json(users)
     } catch (error) {
-        res.status(500).json({message: error.message})
+        res.status(500).json({error: error.message})
     }
 })
 
@@ -16,46 +37,50 @@ router.get('/', async (req, res) => {
 router.get('/:id', async (req, res) => {
     try {
         const user = await User.findById(req.params.id)
-        res.json(user)
+        if (!user) {
+            return res.status(404).json({error: 'User not found'})
+        }
+        res.status(200).json(user)
     } catch (error) {
-        res.status(500).json({message: error.message})
-    }
-})
-
-// Create a user
-router.post('/', async (req, res) => {
-    const user = new User({
-        name: req.body.name,
-        email: req.body.email,
-        password: req.body.password,
-    })
-    try {
-        const newUser = await user.save()
-        res.status(201).json(newUser)
-    } catch (error) {
-        res.status(400).json({message: error.message})
+        res.status(500).json({error: error.message})
     }
 })
 
 // Update a user
-router.put('/:id', async (req, res) => {
-    const user = await User.findById(req.params.id)
-    user.name = req.body.name
-    user.email = req.body.email
-    user.password = req.body.password
+router.put('/edit', authenticateToken, upload.single('profilePicture'), async (req, res) => {
+    const {name, username, phoneNumber} = req.body
+    const userId = req.user._id
+    
     try {
-        const updatedUser = await user.save()
-        res.json(updatedUser)
-    } catch (error) {
-        res.status(400).json({message: error.message})
-    }
-})
+        // Get the image URL from Cloudinary response
+        const updateData = {
+            name,
+            username,
+            phoneNumber,
+        }
+        
+        // Only add profilePicture if a file was uploaded
+        if (req.file) {
+            updateData.profilePicture = req.file.path
+        }
 
-// Delete a user
-router.delete('/:id', async (req, res) => {
-    const user = await User.findById(req.params.id)
-    await user.remove()
-    res.json({message: 'User deleted'})
+        const user = await User.findByIdAndUpdate(
+            userId,
+            updateData,
+            { new: true } // This returns the updated document
+        )
+
+        if(!user){
+            return res.status(404).json({error: 'User not found'})
+        }
+
+        res.status(200).json({
+            message: 'Profile updated successfully',
+            user
+        })
+    } catch (error) {
+        res.status(500).json({error: error.message})
+    }
 })
 
 module.exports = router;
