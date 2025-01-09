@@ -26,10 +26,21 @@ const upload = multer({storage})
 // Get all posts
 router.get('/', async (req, res) => {
     try {
-        const posts = await Post.find();
+        const posts = await Post.find()
+            .populate('user', 'name username profilePicture')
+            .sort({ createdAt: -1 }); // Sort by newest first
+        
+        if (!posts || posts.length === 0) {
+            return res.status(200).json([]); // Return empty array if no posts
+        }
+        
         res.status(200).json(posts);
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        console.error('Error fetching posts:', error);
+        res.status(500).json({ 
+            message: 'Failed to fetch posts',
+            error: error.message 
+        });
     }
 });
 

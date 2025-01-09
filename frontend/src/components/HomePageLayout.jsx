@@ -4,18 +4,25 @@ import PostComponent from './PostComponent';
 import AddPost from './AddPost';
 import { toast } from 'react-toastify';
 import { BACKEND_URI } from '../utils';
-
+ 
 const HomePageLayout = () => {
   const [posts, setPosts] = useState([])
+  const [isLoading, setIsLoading] = useState(true)
 
   const handleFetchPost = async () => {
-    const response = await fetch(`${BACKEND_URI}/api/post/`);
-    if(!response.ok){
+    try {
+      const response = await fetch(`${BACKEND_URI}/api/post/`);
+      if(!response.ok){
+        const data = await response.json()
+        return toast.error(data.error)
+      }
       const data = await response.json()
-      return toast.error(data.error)
+      setPosts(data)
+    } catch (error) {
+      toast.error("Failed to fetch posts")
+    } finally {
+      setIsLoading(false)
     }
-    const data = await response.json()
-    setPosts(data)
   }
 
   useEffect(() => {
@@ -40,11 +47,22 @@ const HomePageLayout = () => {
       </div>
       {/* Posts Container */}
       <div className="flex flex-col gap-4">
-        {
+        {isLoading ? (
+          <div className="text-center text-gray-400">Loading posts...</div>
+        ) : posts.length === 0 ? (
+          <div className="text-center text-gray-400">No posts yet</div>
+        ) : (
           posts.map((post, i) => (
-            <PostComponent key={i} text={post.text} image={post.image} name={post.user.name} username={post.user.username} profilePic={post.user.profilePic} />
+            <PostComponent 
+              key={i} 
+              text={post.text} 
+              images={post.images}
+              name={post.user.name} 
+              username={post.user.username} 
+              profilePicture={post.user.profilePicture} 
+            />
           ))
-        }
+        )}
       </div>
     </div>
   );
