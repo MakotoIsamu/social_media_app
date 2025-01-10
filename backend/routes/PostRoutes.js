@@ -16,8 +16,12 @@ Cloudinary.config({
 const storage = new CloudinaryStorage({
     cloudinary: Cloudinary,
     params: {
-        folder: 'social_media_app',
-        allowed_formats: ['jpg', 'jpeg', 'png']
+        folder: 'social_media_app/posts',
+        allowedFormats: ['jpg', 'jpeg', 'png'],
+        transformation: [
+            {width: 800, height: 800, crop: 'limit'},
+            {quality: 'auto'}
+        ]
     }
 })
 
@@ -55,6 +59,16 @@ router.get('/my-post', authenticateToken, async (req, res) => {
     }
 });
 
+//Get post by userId
+router.get('/get-post-by-user/:id', async (req, res) => {
+    try {
+        const post = await Post.find({user: req.params.id})
+        res.status(200).json(post)
+    } catch (error) {
+        res.status(500).json({error: error.message})
+    }
+})
+
 // Create a post
 router.post('/add', authenticateToken, upload.array('images', 5) , async (req, res) => {
     const {text} = req.body;
@@ -79,15 +93,13 @@ router.post('/add', authenticateToken, upload.array('images', 5) , async (req, r
 // Delete a post
 router.delete('/delete/:id', async (req, res) => {
     try {
-        const post = await Post.findById(req.params.id);
+        const post = await Post.findByIdAndDelete(req.params.id);
         if (!post) {
-            return res.status(404).json({ message: 'Post not found' });
+            return res.status(404).json({ error: 'Error deleting post' });
         }
-
-        await post.remove();
         res.status(200).json({ message: 'Post deleted' });
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        res.status(500).json({ error: error.message });
     }
 });
 

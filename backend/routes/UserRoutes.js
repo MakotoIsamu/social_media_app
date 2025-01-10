@@ -26,20 +26,32 @@ const upload = multer({storage})
 // Get all users
 router.get('/', async (req, res) => {
     try {
-        const users = await User.find()
+        const users = await User.find().select('-password')
         res.status(200).json(users)
     } catch (error) {
         res.status(500).json({error: error.message})
     }
 })
 
-// Get a single user
-router.get('/:id', async (req, res) => {
+// Get user by query
+router.get('/:query', async (req, res) => {
     try {
-        const user = await User.findById(req.params.id)
-        if (!user) {
+        const regex = new RegExp(req.params.query, 'i')
+        const users = await User.find({username: regex})
+        if (!users || users.length === 0) {
             return res.status(404).json({error: 'User not found'})
         }
+        res.status(200).json(users)
+    } catch (error) {
+        res.status(500).json({error: error.message})
+    }
+})
+
+// Get user by id
+router.get('/id/:id', async (req, res) => {
+    const {id} = req.params
+    try {
+        const user = await User.findById(id).select('-password')
         res.status(200).json(user)
     } catch (error) {
         res.status(500).json({error: error.message})

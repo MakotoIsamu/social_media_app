@@ -11,9 +11,15 @@ import ReelsPage from './pages/ReelsPage';
 import ProfilePage from './pages/ProfilePage';
 import ProtectedRoute from './components/ProtectedRoute';
 import EditProfilePage from './pages/EditProfilePage';
+import AccountPage from './pages/AccountPage';
+import CreateSomething from './pages/CreateSomething';
+import AddTweet from './pages/AddTweetPage';
+import UploadShortsPage from './pages/UploadShortsPage';
 
 function App() {
+
   const {Auth} = useContext(AuthContext)
+
   return (
     <Router>
       <Routes>
@@ -43,16 +49,14 @@ function App() {
               </ProtectedRoute>
             } 
           />
+          <Route path='/:username/:id' element={<AccountPage/>} />
         </Route>
+        <Route path='/create-something' element={<CreateSomething/>} />
+        <Route path='/addTweet' element={<AddTweet/>} />
+        <Route path='/uploadShorts' element={<UploadShortsPage/>} />
         <Route path='/reels' element={<ReelsPage/>} />
-        <Route 
-          path='/login' 
-          element={Auth ? <Navigate to='/' replace/> : <LoginPage/>} 
-        />
-        <Route 
-          path='/signup' 
-          element={Auth ? <Navigate to='/' replace/> : <SignupPage/>} 
-        />
+        <Route path='/login' element={Auth ? <Navigate to='/' replace/> : <LoginPage/>} />
+        <Route path='/signup' element={Auth ? <Navigate to='/' replace/> : <SignupPage/>} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </Router>

@@ -4,8 +4,9 @@ import React, { useState } from 'react';
 import Slider from 'react-slick';
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
+import { Link } from 'react-router-dom';
 
-const PostComponent = ({text, images, name, username, profilePicture}) => {
+const PostComponent = ({text, images, name, username, profilePicture, id}) => {
   const [isLiked, setIsLiked] = useState(false);
 
   const sliderSettings = {
@@ -29,10 +30,10 @@ const PostComponent = ({text, images, name, username, profilePicture}) => {
         </div>
         
         <div className="flex-1 min-w-0">
-          <div className="flex flex-col sm:flex-row sm:items-center gap-0.5 sm:gap-2">
+          <Link to={`/${username}/${id}`} className="flex flex-col sm:flex-row sm:items-center gap-0.5 sm:gap-2">
             <h2 className="font-semibold text-white truncate">{name}</h2>
             <p className="text-gray-400 text-sm truncate">@{username}</p>
-          </div>
+          </Link>
         </div>
       </div>
 

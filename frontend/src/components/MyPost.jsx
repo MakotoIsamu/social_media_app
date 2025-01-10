@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import Slider from 'react-slick';
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-import { Heart, MessageCircle, Send, Bookmark, Trash2, X } from 'lucide-react';
+import { Heart, MessageCircle, Send, Bookmark, X } from 'lucide-react';
 
 const MyPost = ({ images, text, profilePicture, username }) => {
   const [isPostModal, setIsPostModal] = useState(false);
@@ -123,7 +123,6 @@ const MyPost = ({ images, text, profilePicture, username }) => {
                   <img src={profilePicture} alt="" className="h-8 w-8 rounded-full object-cover" />
                   <span className="font-medium">@{username}</span>
                 </div>
-                <div className='text-red-700 text-xl'><Trash2/></div>
               </div>
 
               {/* Comments */}

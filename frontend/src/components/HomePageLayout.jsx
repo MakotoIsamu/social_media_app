@@ -1,7 +1,6 @@
 // HomePageLayout.jsx
 import React, { useEffect, useState } from 'react';
 import PostComponent from './PostComponent';
-import AddPost from './AddPost';
 import { toast } from 'react-toastify';
 import { BACKEND_URI } from '../utils';
  
@@ -31,7 +30,6 @@ const HomePageLayout = () => {
   
   return (
     <div className="max-w-2xl mx-auto">
-      <AddPost />
       {/* Tab Navigation */}
       <div className="w-full flex mb-6 bg-white/5 rounded-xl overflow-hidden backdrop-blur-sm">
         <button className="w-1/2 py-3 text-gray-200 font-medium border-r border-gray-700 
@@ -59,7 +57,8 @@ const HomePageLayout = () => {
               images={post.images}
               name={post.user.name} 
               username={post.user.username} 
-              profilePicture={post.user.profilePicture} 
+              profilePicture={post.user.profilePicture}
+              id={post.user._id} 
             />
           ))
         )}

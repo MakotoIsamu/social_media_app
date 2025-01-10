@@ -8,7 +8,7 @@ const BottomBar = () => {
   const tabs = [
     { id: 'home', icon: Home, path: '/' },
     { id: 'search', icon: Search, path: '/search' },
-    { id: 'post', icon: Plus, path: '/create-post' },
+    { id: 'post', icon: Plus, path: '/create-something' },
     { id: 'reels', icon: Film, path: '/reels' },
     { id: 'profile', icon: User, path: Auth ? '/profile' : '/login' }
   ];
