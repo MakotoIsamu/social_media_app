@@ -9,51 +9,6 @@ const MyPost = ({ images, text, profilePicture, username }) => {
 
   const comments = [
     {
-      username: "john_doe",
-      text: "This is amazing! 🔥",
-      profilePic: "https://randomuser.me/api/portraits/men/1.jpg"
-    },
-    {
-      username: "sarah_smith",
-      text: "Love the composition of this shot! 📸",
-      profilePic: "https://randomuser.me/api/portraits/women/2.jpg"
-    },
-    {
-      username: "photo_enthusiast",
-      text: "What camera did you use for this?",
-      profilePic: "https://randomuser.me/api/portraits/men/3.jpg"
-    },
-    {
-      username: "travel_lover",
-      text: "This location looks incredible! Where is this? ✈️",
-      profilePic: "https://randomuser.me/api/portraits/women/4.jpg"
-    },
-    {
-      username: "art_critic",
-      text: "The lighting in this photo is perfect 👌",
-      profilePic: "https://randomuser.me/api/portraits/men/5.jpg"
-    },
-    {
-      username: "nature_explorer",
-      text: "Such a stunning view! Nature at its best 🌲",
-      profilePic: "https://randomuser.me/api/portraits/women/6.jpg"
-    },
-    {
-      username: "tech_geek",
-      text: "Great edit! Which filters did you use?",
-      profilePic: "https://randomuser.me/api/portraits/men/7.jpg"
-    },
-    {
-      username: "creative_soul",
-      text: "This deserves to be in a gallery! 🎨",
-      profilePic: "https://randomuser.me/api/portraits/women/8.jpg"
-    },
-    {
-      username: "wanderlust_22",
-      text: "Adding this to my travel bucket list! 🗺️",
-      profilePic: "https://randomuser.me/api/portraits/men/9.jpg"
-    },
-    {
       username: "photo_pro",
       text: "The depth of field here is exceptional",
       profilePic: "https://randomuser.me/api/portraits/women/10.jpg"

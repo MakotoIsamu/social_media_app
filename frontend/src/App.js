@@ -25,30 +25,9 @@ function App() {
       <Routes>
         <Route path='/' element={<HomePage/>}>
           <Route path='search' element={<SearchPage/>} />
-          <Route 
-            path='addPost' 
-            element={
-              <ProtectedRoute>
-                <AddPostPage/>
-              </ProtectedRoute>
-            } 
-          />
-          <Route 
-            path='profile' 
-            element={
-              <ProtectedRoute>
-                <ProfilePage/>
-              </ProtectedRoute>
-            } 
-          />
-          <Route 
-            path='edit-profile' 
-            element={
-              <ProtectedRoute>
-                <EditProfilePage/>
-              </ProtectedRoute>
-            } 
-          />
+          <Route path='addPost' element={<ProtectedRoute><AddPostPage/></ProtectedRoute>} />
+          <Route path='profile' element={<ProtectedRoute><ProfilePage/></ProtectedRoute>} />
+          <Route path='edit-profile' element={<ProtectedRoute><EditProfilePage/></ProtectedRoute>} />
           <Route path='/:username/:id' element={<AccountPage/>} />
         </Route>
         <Route path='/create-something' element={<CreateSomething/>} />

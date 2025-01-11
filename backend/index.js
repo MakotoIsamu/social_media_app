@@ -2,9 +2,11 @@ require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
+const tweetRoutes = require('./routes/TweetRoutes');
 const authRoutes = require('./routes/AuthRoutes');
 const postRoutes = require('./routes/PostRoutes');
 const userRoutes = require('./routes/UserRoutes');
+const shortsRoutes = require('./routes/UploadShortsRoute');
 const app = express();
 const PORT = process.env.PORT || 5000;
 
@@ -24,6 +26,8 @@ mongoose.connect(process.env.MONGO_URI)
 app.use('/api/auth', authRoutes);
 app.use('/api/post', postRoutes);
 app.use('/api/user', userRoutes);
+app.use('/api/tweet', tweetRoutes);
+app.use('/api/shorts', shortsRoutes);
 
 app.get('/', (req, res) => {
     res.send('API is running');

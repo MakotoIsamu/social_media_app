@@ -1,15 +1,41 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useContext, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Send } from 'lucide-react';
+import { toast } from 'react-toastify';
+import { BACKEND_URI } from '../utils';
+import { AuthContext } from '../contexts/AuthContext';
 
 const AddTweet = () => {
+  const navigate = useNavigate();
+  const {token} = useContext(AuthContext)
   const [tweet, setTweet] = useState('');
   const charLimit = 280;
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Tweet submitted:', tweet);
-    // Handle tweet submission here
+
+    try {
+      const response = await fetch(`${BACKEND_URI}/api/tweet/add`, {
+        method: "POST",
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({ tweet }),
+      });
+
+      const data = await response.json();
+      if (!response.ok) {
+        return toast.error(data.error || 'Failed to post tweet');
+      }
+      
+      setTweet("");
+      navigate("/profile");
+      toast.success(data.message || 'Tweet posted successfully');
+    } catch (error) {
+      console.error('Tweet submission error:', error);
+      toast.error("Network error. Please check your connection and try again.");
+    }
   };
 
   return (

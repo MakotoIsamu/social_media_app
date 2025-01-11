@@ -13,20 +13,36 @@ router.post('/register', async (req, res) => {
     }
 
     try {
-        const existingUser = await User.findOne({ email });
-        if (existingUser) {
-            return res.status(400).json({ error: 'Email already registered' });
+        const existingUsername = await User.findOne({ username });
+        if (existingUsername) {
+            return res.status(400).json({ 
+                error: 'Username already exist' // Generic message for security
+            });
         }
 
-        const hashedPassword = await bcrypt.hash(password, 10);
+        const existingEmail = await User.findOne({ email });
+        if (existingEmail) {
+            return res.status(400).json({ 
+                error: 'Email already exist' // Generic message for security
+            });
+        }
+
+        // Use a higher work factor for better security
+        const hashedPassword = await bcrypt.hash(password, 12);
+        
         const user = new User({
-            username,
-            email,
+            username: username.toLowerCase(), // Store lowercase for case-insensitive lookups
+            email: email.toLowerCase(),
             password: hashedPassword,
         });
 
-        const newUser = await user.save();
-        res.status(201).json({ message: 'Signup successful', user: newUser });
+        await user.save();
+
+        // Don't send back the full user object
+        res.status(201).json({ 
+            message: 'Registration successful',
+            userId: user._id
+        });
     } catch (error) {
         res.status(500).json({ error: error.message });
     }

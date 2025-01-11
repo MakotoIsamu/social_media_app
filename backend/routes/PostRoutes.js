@@ -19,8 +19,8 @@ const storage = new CloudinaryStorage({
         folder: 'social_media_app/posts',
         allowedFormats: ['jpg', 'jpeg', 'png'],
         transformation: [
-            {width: 800, height: 800, crop: 'limit'},
-            {quality: 'auto'}
+            {width: 500, height: 500, crop: 'auto', gravity: 'auto'},
+            {quality: '50', fetch_format: 'auto'} // Reduced quality but still maintaining decent image quality
         ]
     }
 })

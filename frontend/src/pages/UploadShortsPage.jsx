@@ -1,23 +1,34 @@
-import React, { useState, useRef } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState, useRef, useContext } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Upload, X, PlayCircle, Video } from 'lucide-react';
+import { toast } from 'react-toastify';
+import { AuthContext } from '../contexts/AuthContext';
+import { BACKEND_URI } from '../utils';
 
 const UploadShorts = () => {
   const [video, setVideo] = useState(null);
   const [caption, setCaption] = useState('');
   const [isDragging, setIsDragging] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
+  const {token} = useContext(AuthContext)
   const videoRef = useRef(null);
   const fileInputRef = useRef(null);
+  const navigate = useNavigate();
 
   const handleVideoUpload = (files) => {
     const file = files[0];
     if (file && file.type.startsWith('video/')) {
+      // Check file size (limit to 100MB)
+      if (file.size > 100 * 1024 * 1024) {
+        toast.error('Video size should be less than 100MB');
+        return;
+      }
       setVideo({
         url: URL.createObjectURL(file),
         file
       });
     } else {
-      alert('Please upload a valid video file');
+      toast.error('Please upload a valid video file');
     }
   };
 
@@ -47,10 +58,42 @@ const UploadShorts = () => {
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Submitting:', { video: video?.file, caption });
-    // Handle submission logic here
+    
+    if (!video || !caption.trim()) {
+      toast.error('Please add both video and caption');
+      return;
+    }
+
+    try {
+      setIsUploading(true);
+      const formData = new FormData();
+      formData.append('video', video.file);
+      formData.append('caption', caption.trim());
+
+      const response = await fetch(`${BACKEND_URI}/api/shorts/add`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        },
+        body: formData
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Failed to upload shorts');
+      }
+
+      toast.success('Shorts uploaded successfully!');
+      navigate('/'); // Or wherever you want to redirect after successful upload
+    } catch (error) {
+      toast.error(error.message || 'Something went wrong');
+      console.error('Upload error:', error);
+    } finally {
+      setIsUploading(false);
+    }
   };
 
   return (
@@ -66,14 +109,14 @@ const UploadShorts = () => {
           </Link>
           <button
             onClick={handleSubmit}
-            disabled={!video}
+            disabled={!video || isUploading}
             className={`px-6 py-2 rounded-full font-medium transition-all
-              ${!video 
+              ${(!video || isUploading)
                 ? 'bg-purple-600/50 text-gray-400 cursor-not-allowed'
                 : 'bg-purple-600 text-white hover:bg-purple-700'
               }`}
           >
-            Upload Shorts
+            {isUploading ? 'Uploading...' : 'Upload Shorts'}
           </button>
         </div>
       </div>
@@ -106,10 +149,11 @@ const UploadShorts = () => {
                     onChange={(e) => handleVideoUpload(e.target.files)}
                     className="hidden"
                     ref={fileInputRef}
+                    disabled={isUploading}
                   />
                 </label>
                 <p className="text-gray-500 text-sm mt-4 text-center">
-                  Maximum duration: 60 seconds
+                  Maximum file size: 100MB
                 </p>
               </div>
             ) : (
@@ -122,7 +166,8 @@ const UploadShorts = () => {
                 />
                 <button
                   onClick={removeVideo}
-                  className="absolute top-4 right-4 p-2 bg-red-500 rounded-full hover:bg-red-600 transition-colors"
+                  disabled={isUploading}
+                  className="absolute top-4 right-4 p-2 bg-red-500 rounded-full hover:bg-red-600 transition-colors disabled:bg-red-500/50 disabled:cursor-not-allowed"
                 >
                   <X size={20} className="text-white" />
                 </button>
@@ -138,6 +183,7 @@ const UploadShorts = () => {
               placeholder="Write a caption for your shorts..."
               className="w-full h-32 bg-transparent text-white placeholder-gray-500 resize-none focus:outline-none"
               maxLength={200}
+              disabled={isUploading}
             />
             <div className="flex justify-end mt-2">
               <span className="text-gray-400 text-sm">

@@ -1,67 +1,51 @@
-// HomePageLayout.jsx
-import React, { useEffect, useState } from 'react';
-import PostComponent from './PostComponent';
-import { toast } from 'react-toastify';
-import { BACKEND_URI } from '../utils';
- 
+import React, { useState } from "react";
+import PostSection from "./PostSection";
+import TweetSection from "./TweetSection";
+
 const HomePageLayout = () => {
-  const [posts, setPosts] = useState([])
-  const [isLoading, setIsLoading] = useState(true)
+  const [activeSection, setActiveSection] = useState('post');
 
-  const handleFetchPost = async () => {
-    try {
-      const response = await fetch(`${BACKEND_URI}/api/post/`);
-      if(!response.ok){
-        const data = await response.json()
-        return toast.error(data.error)
-      }
-      const data = await response.json()
-      setPosts(data)
-    } catch (error) {
-      toast.error("Failed to fetch posts")
-    } finally {
-      setIsLoading(false)
+  const navItems = [
+    { id: 'post', label: 'Post' },
+    { id: 'tweet', label: 'Tweet' },
+  ];
+
+  // Function to render the active section
+  const renderSection = () => {
+    switch (activeSection) {
+      case 'post':
+        return <PostSection />;
+      case 'tweet':
+        return <TweetSection />;
+      default:
+        return <PostSection />;
     }
-  }
+  };
 
-  useEffect(() => {
-    handleFetchPost()
-  }, [])
-  
   return (
-    <div className="max-w-2xl mx-auto">
-      {/* Tab Navigation */}
-      <div className="w-full flex mb-6 bg-white/5 rounded-xl overflow-hidden backdrop-blur-sm">
-        <button className="w-1/2 py-3 text-gray-200 font-medium border-r border-gray-700 
-                         transition duration-200 hover:bg-white/10 active:bg-white/20
-                         focus:outline-none focus:bg-white/10">
-          For you
-        </button>
-        <button className="w-1/2 py-3 text-gray-200 font-medium
-                         transition duration-200 hover:bg-white/10 active:bg-white/20
-                         focus:outline-none focus:bg-white/10">
-          Following
-        </button>
-      </div>
-      {/* Posts Container */}
-      <div className="flex flex-col gap-4">
-        {isLoading ? (
-          <div className="text-center text-gray-400">Loading posts...</div>
-        ) : posts.length === 0 ? (
-          <div className="text-center text-gray-400">No posts yet</div>
-        ) : (
-          posts.map((post, i) => (
-            <PostComponent 
-              key={i} 
-              text={post.text} 
-              images={post.images}
-              name={post.user.name} 
-              username={post.user.username} 
-              profilePicture={post.user.profilePicture}
-              id={post.user._id} 
-            />
-          ))
-        )}
+    <div className="min-h-screen bg-gray-900 text-white p-4">
+      <div className="max-w-2xl mx-auto space-y-6">
+        {/* Navigation */}
+        <div className="flex justify-center bg-gray-800 rounded-lg p-1">
+          {navItems.map((item) => (
+            <button
+              key={item.id}
+              onClick={() => setActiveSection(item.id)}
+              className={`px-6 py-2 rounded-md transition-all duration-200 ${
+                activeSection === item.id
+                  ? 'bg-gray-700 text-white'
+                  : 'text-gray-400 hover:text-gray-200'
+              }`}
+            >
+              {item.label}
+            </button>
+          ))}
+        </div>
+
+        {/* Content Section */}
+        <div className="w-full">
+          {renderSection()}
+        </div>
       </div>
     </div>
   );
