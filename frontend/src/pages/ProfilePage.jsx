@@ -94,6 +94,25 @@ const ProfilePage = () => {
     }
   };
 
+    const handleTweetDelete = async (id) => {
+      try {
+        const response = await fetch(`${BACKEND_URI}/api/tweet/delete/${id}`, {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+        
+        if (!response.ok) {
+          throw new Error('Failed to delete post');
+        }
+        
+        fetchTweets()
+      } catch (error) {
+        alert('Error deleting tweet:', error);
+      }
+    };
+
   useEffect(() => {
     fetchUser();
     fetchPosts();
@@ -115,6 +134,7 @@ const ProfilePage = () => {
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-1 md:gap-2">
             {posts.map((post, i) => (
               <MyPost 
+                postId={post._id}
                 images={post.images} 
                 text={post.text} 
                 name={user.name} 
@@ -129,9 +149,9 @@ const ProfilePage = () => {
         return (
           <div className="space-y-4">
             {tweets.map((tweet, i) => (
-              <div key={i} className="bg-gray-800/30 rounded-lg p-4">
+              <div key={i} className="bg-gray-800/30 rounded-lg p-4 flex justify-between items-center">
                 <p>{tweet.tweet}</p>
-                {/* Add more tweet details as needed */}
+                <p onClick={ ()=> handleTweetDelete(tweet._id)} className='text-white bg-red-700 px-4 py-2 rounded-md active:bg-red-400 hover:cursor-pointer'>Delete</p>
               </div>
             ))}
           </div>

@@ -3,13 +3,14 @@ import { BACKEND_URI } from "../utils";
 import { AuthContext } from "../contexts/AuthContext";
 import { useNavigate, Link } from "react-router-dom";
 import { toast } from "react-toastify";
-import { ImagePlus, X, ArrowLeft, Send, Image as ImageIcon } from "lucide-react";
+import { ImagePlus, X, ArrowLeft, Send } from "lucide-react";
 
 const AddPostPage = () => {
   const [text, setText] = useState("");
   const [images, setImages] = useState([]);
   const [previews, setPreviews] = useState([]);
-  const { Auth, token } = useContext(AuthContext);
+  const [loading, setLoading] = useState(false); // Loading state
+  const { token } = useContext(AuthContext);
   const navigate = useNavigate();
 
   const maxLength = 280;
@@ -22,24 +23,24 @@ const AddPostPage = () => {
     }
     const selectedFiles = Array.from(files);
     setImages(selectedFiles);
-    
+
     // Create preview URLs
-    const newPreviews = selectedFiles.map(file => URL.createObjectURL(file));
-    setPreviews(prev => {
-      // Cleanup old previews
-      prev.forEach(url => URL.revokeObjectURL(url));
+    const newPreviews = selectedFiles.map((file) => URL.createObjectURL(file));
+    setPreviews((prev) => {
+      prev.forEach((url) => URL.revokeObjectURL(url)); // Cleanup old previews
       return newPreviews;
     });
   };
 
   const removeImage = (index) => {
     URL.revokeObjectURL(previews[index]);
-    setPreviews(prev => prev.filter((_, i) => i !== index));
-    setImages(prev => prev.filter((_, i) => i !== index));
+    setPreviews((prev) => prev.filter((_, i) => i !== index));
+    setImages((prev) => prev.filter((_, i) => i !== index));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true); // Set loading to true
 
     const formData = new FormData();
     formData.append("text", text);
@@ -58,15 +59,18 @@ const AddPostPage = () => {
 
       const data = await response.json();
       if (!response.ok) {
-        return toast.error(data.error);
+        toast.error(data.error);
+      } else {
+        setText("");
+        setPreviews([]);
+        setImages([]);
+        navigate("/profile");
+        toast.success(data.message);
       }
-      setText("");
-      setPreviews([]);
-      setImages([]);
-      navigate("/profile");
-      toast.success(data.message);
     } catch (error) {
       toast.error("Something went wrong. Please try again.");
+    } finally {
+      setLoading(false); // Reset loading state
     }
   };
 
@@ -87,15 +91,21 @@ const AddPostPage = () => {
           </Link>
           <button
             onClick={handleSubmit}
-            disabled={text.trim() === "" || isAtLimit}
+            disabled={text.trim() === "" || isAtLimit || loading}
             className={`px-6 py-2 rounded-full font-medium transition-all flex items-center gap-2
-              ${text.trim() === "" || isAtLimit
-                ? 'bg-blue-600/50 text-gray-400 cursor-not-allowed'
-                : 'bg-blue-600 text-white hover:bg-blue-700'
+              ${text.trim() === "" || isAtLimit || loading
+                ? "bg-blue-600/50 text-gray-400 cursor-not-allowed"
+                : "bg-blue-600 text-white hover:bg-blue-700"
               }`}
           >
-            <Send size={18} />
-            Post
+            {loading ? (
+              <div className="animate-spin h-5 w-5 border-b-2 border-white rounded-full"></div>
+            ) : (
+              <>
+                <Send size={18} />
+                Post
+              </>
+            )}
           </button>
         </div>
       </div>

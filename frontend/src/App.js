@@ -15,6 +15,7 @@ import AccountPage from './pages/AccountPage';
 import CreateSomething from './pages/CreateSomething';
 import AddTweet from './pages/AddTweetPage';
 import UploadShortsPage from './pages/UploadShortsPage';
+import MesssagingPage from './pages/MesssagingPage';
 
 function App() {
 
@@ -36,6 +37,7 @@ function App() {
         <Route path='/reels' element={<ReelsPage/>} />
         <Route path='/login' element={Auth ? <Navigate to='/' replace/> : <LoginPage/>} />
         <Route path='/signup' element={Auth ? <Navigate to='/' replace/> : <SignupPage/>} />
+        <Route path='/message' element={<MesssagingPage />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </Router>

@@ -1,127 +1,106 @@
-import React, { useState } from 'react';
-import Slider from 'react-slick';
+import React, { useState } from "react";
+import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-import { Heart, MessageCircle, Send, Bookmark, X } from 'lucide-react';
+import { X } from "lucide-react";
+import { BACKEND_URI } from "../utils";
+import { useNavigate } from "react-router-dom";
 
-const MyPost = ({ images, text, profilePicture, username }) => {
+const MyPost = ({ postId, images, text, profilePicture, username, onDelete }) => {
   const [isPostModal, setIsPostModal] = useState(false);
+  const navigate = useNavigate();
 
-  const comments = [
-    {
-      username: "photo_pro",
-      text: "The depth of field here is exceptional",
-      profilePic: "https://randomuser.me/api/portraits/women/10.jpg"
-    },
-    {
-      username: "urban_shooter",
-      text: "Love the perspective! What lens did you use? 📷",
-      profilePic: "https://randomuser.me/api/portraits/men/11.jpg"
-    },
-    {
-      username: "light_chaser",
-      text: "The golden hour vibes are strong in this one ✨",
-      profilePic: "https://randomuser.me/api/portraits/women/12.jpg"
-    },
-    {
-      username: "pixel_perfect",
-      text: "This is absolutely breathtaking! 😍",
-      profilePic: "https://randomuser.me/api/portraits/men/13.jpg"
+  const toggleModal = () => setIsPostModal((prev) => !prev);
+
+  const handleDelete = async () => {
+    try {
+      const response = await fetch(`${BACKEND_URI}/api/post/delete/${postId}`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!response.ok) throw new Error("Failed to delete post");
+
+      setIsPostModal(false);
+      navigate("/");
+    } catch (error) {
+      console.error("Error deleting post:", error);
     }
-  ];
-
-  const settings = {
-    infinite: true,
-    speed: 500,
-    slidesToShow: 1,
-    slidesToScroll: 1,
-    arrows: true,
-    dots: false,
   };
-
-  const handleModal = () => setIsPostModal(!isPostModal);
 
   return (
     <>
-      <div className="aspect-square bg-gray-100 cursor-pointer" onClick={handleModal}>
-        <img src={images[0]} alt={text} className="h-full w-full object-cover" />
+      {/* Post Thumbnail */}
+      <div
+        className="aspect-square bg-gray-200 cursor-pointer rounded-lg overflow-hidden"
+        onClick={toggleModal}
+      >
+        <img
+          src={images[0]}
+          alt={text}
+          className="h-full w-full object-cover hover:scale-105 transition-transform duration-200"
+        />
       </div>
 
+      {/* Modal */}
       {isPostModal && (
         <div className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4">
-          <div className="bg-white max-w-6xl w-full rounded-lg overflow-hidden flex md:flex-row flex-col h-[90vh] md:h-[80vh]">
-            {/* Left side - Image carousel */}
+          <div className="bg-white max-w-4xl w-full rounded-lg overflow-hidden flex flex-col md:flex-row h-[85vh] md:h-[80vh] relative">
+            {/* Image Section */}
             <div className="md:w-7/12 bg-black flex items-center">
-              {
-                images.length === 1 ? (
-                    <div className="aspect-square w-full">
-                        <img src={images[0]} alt='PostImage' className="w-full h-full object-contain" />
+              {images.length > 1 ? (
+                <Slider className="w-full">
+                  {images.map((image, index) => (
+                    <div key={index} className="aspect-square">
+                      <img src={image} alt={`Slide ${index + 1}`} className="w-full h-full object-contain" />
                     </div>
-                ):(
-                    <Slider {...settings} className="w-full">
-                        {images.map((image, index) => (
-                        <div key={index} className="aspect-square">
-                            <img src={image} alt={`Slide ${index + 1}`} className="w-full h-full object-contain" />
-                        </div>
-                        ))}
-                    </Slider>
-                )
-
-              }
+                  ))}
+                </Slider>
+              ) : (
+                <img src={images[0]} alt="PostImage" className="w-full h-full object-contain" />
+              )}
             </div>
 
-            {/* Right side - Comments section */}
-            <div className="md:w-5/12 flex flex-col h-full bg-black text-white">
+            {/* Post Details */}
+            <div className="md:w-5/12 flex flex-col h-full bg-black text-white p-4">
               {/* Header */}
-              <div className="p-4 flex justify-between items-center border-b border-gray-700">
+              <div className="flex justify-between items-center border-b border-gray-700 pb-4">
                 <div className="flex items-center space-x-3">
-                  <img src={profilePicture} alt="" className="h-8 w-8 rounded-full object-cover" />
-                  <span className="font-medium">@{username}</span>
+                  <img src={profilePicture} alt="" className="h-10 w-10 rounded-full object-cover" />
+                  <span className="font-medium text-lg">@{username}</span>
                 </div>
               </div>
 
-              {/* Comments */}
-              <div className="flex-1 overflow-y-auto p-4 space-y-4">
-                {/* Post caption */}
-                <div className="flex space-x-3">
-                  <img src={profilePicture} alt={username} className="h-8 w-8 rounded-full object-cover" />
-                  <div>
-                    <span className="font-medium">@{username}</span>
-                    <span className="ml-2">{text}</span>
-                  </div>
-                </div>
-
-                {/* Comments list */}
-                {comments.map((comment, index) => (
-                  <div key={index} className="flex space-x-3">
-                    <img src={comment.profilePic} alt="" className="h-8 w-8 rounded-full object-cover" />
-                    <div>
-                      <span className="font-medium text-pink-500">@{comment.username}</span>
-                      <span className="ml-2">{comment.text}</span>
-                    </div>
-                  </div>
-                ))}
+              {/* Post Text */}
+              <div className="flex-1 overflow-auto p-4 text-gray-300">
+                <p className="text-sm">{text}</p>
               </div>
 
-              {/* Action buttons */}
-              <div className="p-4 border-t border-gray-700">
-                <div className="flex justify-between mb-4">
-                  <div className="flex space-x-4">
-                    <Heart className="w-6 h-6 cursor-pointer text-white" />
-                    <MessageCircle className="w-6 h-6 cursor-pointer text-white" />
-                    <Send className="w-6 h-6 cursor-pointer text-white" />
-                  </div>
-                  <Bookmark className="w-6 h-6 cursor-pointer text-white" />
-                </div>
+              {/* Actions */}
+              <div className="flex justify-end space-x-4 mt-4">
+                <button
+                  onClick={handleDelete}
+                  className="bg-red-600 hover:bg-red-500 text-white px-4 py-2 rounded-md transition-all"
+                >
+                  Delete
+                </button>
+                <button
+                  onClick={toggleModal}
+                  className="bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded-md transition-all"
+                >
+                  Close
+                </button>
               </div>
             </div>
 
-            {/* Close button */}
+            {/* Close Button */}
             <button
-              onClick={handleModal}
-              className="absolute top-4 right-4 text-white p-2 rounded-full hover:bg-gray-800"
+              onClick={toggleModal}
+              className="absolute top-3 right-3 text-white bg-gray-800 hover:bg-gray-700 p-2 rounded-full transition"
             >
-              <X/>
+              <X size={22} />
             </button>
           </div>
         </div>

@@ -17,7 +17,7 @@ const storage = new CloudinaryStorage({
     cloudinary: Cloudinary,
     params: {
         folder: 'social_media_app/posts',
-        allowedFormats: ['jpg', 'jpeg', 'png'],
+        allowedFormats: ['jpg', 'jpeg', 'png'], 
         transformation: [
             {width: 500, height: 500, crop: 'auto', gravity: 'auto'},
             {quality: '50', fetch_format: 'auto'} // Reduced quality but still maintaining decent image quality
@@ -90,18 +90,47 @@ router.post('/add', authenticateToken, upload.array('images', 5) , async (req, r
     }
 });
 
-// Delete a post
+// Delete a post and remove images from Cloudinary
 router.delete('/delete/:id', async (req, res) => {
     try {
-        const post = await Post.findByIdAndDelete(req.params.id);
+        console.log(`Deleting post with ID: ${req.params.id}`);
+
+        const post = await Post.findById(req.params.id);
         if (!post) {
-            return res.status(404).json({ error: 'Error deleting post' });
+            console.log('Post not found');
+            return res.status(404).json({ error: 'Post not found' });
         }
-        res.status(200).json({ message: 'Post deleted' });
+
+        console.log('Post found:', post);
+
+        // Delete images from Cloudinary
+        if (post.images && post.images.length > 0) {
+            console.log('Images to delete:', post.images);
+
+            const deletePromises = post.images.map(imageUrl => {
+                const publicId = imageUrl.split('/').pop().split('.')[0]; // Extract public ID from URL
+                console.log(`Extracted Public ID: ${publicId}`);
+                return Cloudinary.uploader.destroy(`social_media_app/posts/${publicId}`)
+                    .then(result => console.log(`Deleted from Cloudinary: ${publicId}`, result))
+                    .catch(err => console.error(`Error deleting ${publicId} from Cloudinary:`, err));
+            });
+
+            await Promise.all(deletePromises);
+        } else {
+            console.log('No images found for this post.');
+        }
+
+        // Delete post from DB
+        await Post.findByIdAndDelete(req.params.id);
+        console.log('Post deleted from database');
+
+        res.status(200).json({ message: 'Post and images deleted successfully' });
     } catch (error) {
+        console.error('Error deleting post:', error);
         res.status(500).json({ error: error.message });
     }
 });
+
 
 router.put('/like/:id', async (req, res) => {
     const {id} = req.params

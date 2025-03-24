@@ -1,7 +1,7 @@
 import React, { useContext } from 'react';
 import { Link } from 'react-router-dom';
 import {AuthContext} from '../contexts/AuthContext'
-import { Home, Film, Plus, Search, User } from 'lucide-react';
+import { Home, Film, Plus, Search, User, MessageCircle } from 'lucide-react';
 
 const BottomBar = () => {
   const {Auth} = useContext(AuthContext)
@@ -10,7 +10,8 @@ const BottomBar = () => {
     { id: 'search', icon: Search, path: '/search' },
     { id: 'post', icon: Plus, path: '/create-something' },
     { id: 'reels', icon: Film, path: '/reels' },
-    { id: 'profile', icon: User, path: Auth ? '/profile' : '/login' }
+    { id: 'profile', icon: User, path: Auth ? '/profile' : '/login' },
+    { id: 'message', icon: MessageCircle, path: Auth ? '/message' : '/login' }
   ];
 
   return (
