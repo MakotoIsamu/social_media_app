@@ -41,10 +41,10 @@ const PostSection = () => {
               key={i}
               text={post.text}
               images={post.images}
-              name={post.user.name}
-              username={post.user.username}
-              profilePicture={post.user.profilePicture}
-              id={post.user._id}
+              name={post.user?.name || "Unknown"}  // Use optional chaining
+              username={post.user?.username || "unknown"}
+              profilePicture={post.user?.profilePicture || "/default-avatar.png"}
+              id={post.user?._id || ""}
             />
           ))
         )}
