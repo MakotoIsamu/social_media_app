@@ -64,7 +64,7 @@ const MesssagingPage = () => {
   };
 
   return (
-    <div className="flex h-screen bg-gray-900 text-white">
+    <div className="flex h-screen w-full overflow-hidden bg-gray-900 text-white">
       {/* User List */}
       <div 
         className={`${isMobile ? 'fixed inset-0 z-10' : 'relative'} 
