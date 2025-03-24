@@ -11,7 +11,7 @@ const BottomBar = () => {
     { id: 'post', icon: Plus, path: '/create-something' },
     { id: 'reels', icon: Film, path: '/reels' },
     { id: 'profile', icon: User, path: Auth ? '/profile' : '/login' },
-    { id: 'message', icon: MessageCircle, path: Auth ? '/message' : '/login' }
+    { id: 'message', icon: MessageCircle, path: '/message' }
   ];
 
   return (
