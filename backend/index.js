@@ -11,8 +11,8 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 app.use(cors({
-    // origin:'https://vaartalapkaro.vercel.app',
-    origin: 'http://localhost:3000',
+    origin:'https://vaartalapkaro.vercel.app',
+    // origin: 'http://localhost:3000',
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH']
 }));
 
